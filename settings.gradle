@@ -1,0 +1,2 @@
+rootProject.name='Dots&Boxes'
+include ':app'
