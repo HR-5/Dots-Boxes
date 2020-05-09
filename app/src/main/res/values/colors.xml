@@ -8,5 +8,11 @@
     <color name="red">#C50909</color>
     <color name="blue2">#4E86FA</color>
     <color name="red2">#FD3E3E</color>
+    <color name="purple">#8c5ac8</color>
+    <color name="green">#09910F</color>
+    <color name="green2">#27C32E</color>
+    <color name="orange">#DA7204</color>
+    <color name="orange2">#F48C2A</color>
+    <color name="text">#E40DDDE1</color>
 
 </resources>
