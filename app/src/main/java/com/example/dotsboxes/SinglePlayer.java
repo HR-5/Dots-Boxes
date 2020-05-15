@@ -67,8 +67,7 @@ public class SinglePlayer extends AppCompatActivity {
 
     public void nextl(View view) {
         w--;
-        char c;
-        if (w < 3)
+        if (w < 4)
             w = 5;
         TextView t = (TextView) findViewById(R.id.textView);
         String s = w + "x" + w;
