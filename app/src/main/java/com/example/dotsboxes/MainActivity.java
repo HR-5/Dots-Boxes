@@ -41,7 +41,6 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     int n;
     MyCanvasView myCanvasView;
-    Singles singles;
     int black;
     int ptot;
     int f;
@@ -58,16 +57,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void single(View view) {
-        setContentView(R.layout.activity_main);
-        TextView t = (TextView) findViewById(R.id.textView2);
-        EditText e = (EditText) findViewById(R.id.player);
-        t.setVisibility(View.INVISIBLE);
-        e.setVisibility(View.INVISIBLE);
-        f = 1;
-        n = 3;
-        cons = (ConstraintLayout) findViewById(R.id.layout);
-        undo = (Button) findViewById(R.id.undo);
-        ptot = 0;
+        Intent in = new Intent(MainActivity.this, SinglePlayer.class);
+        startActivity(in);
     }
 
     public void multi(View view) {
@@ -139,21 +130,12 @@ public class MainActivity extends AppCompatActivity {
                 toast.show();
             }
         } else if (f == 1) {
-            ImageView i = (ImageView) findViewById(R.id.imageView);
-            i.setVisibility(View.INVISIBLE);
-            undo = (Button) findViewById(R.id.undo);
-            Button b1 = (Button) findViewById(R.id.next1);
-            Button b3 = (Button) findViewById(R.id.play);
-            Button b2 = (Button) findViewById(R.id.next2);
-            Button res = (Button) findViewById(R.id.reset2);
-            TextView t = (TextView) findViewById(R.id.textView);
-            t.setVisibility(View.INVISIBLE);
-            b1.setVisibility(View.INVISIBLE);
-            b2.setVisibility(View.INVISIBLE);
-            b3.setVisibility(View.INVISIBLE);
-            singles = new Singles(this);
-            cons.addView(singles);
-            res.setVisibility(View.VISIBLE);
+
+            Intent in = new Intent(MainActivity.this, SinglePlayer.class);
+            startActivity(in);
+//            singles = new Singles(this);
+//            cons.addView(singles);
+
         }
     }
 
@@ -164,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
         Button res2 = (Button) findViewById(R.id.reset2);
         res2.setVisibility(View.INVISIBLE);
         cons.removeView(myCanvasView);
-        cons.removeView(singles);
         undo.setVisibility(View.INVISIBLE);
         ImageView i = (ImageView) findViewById(R.id.imageView);
         i.setVisibility(View.VISIBLE);
@@ -616,363 +597,6 @@ public class MainActivity extends AppCompatActivity {
             nc++;
             if (nc >= (2 * n * (n - 1))) {
                 result();
-            }
-        }
-    }
-
-    public class Singles extends View {
-        int o11;
-        int o12;
-        int o21;
-        int o22;
-        int sw;
-        int sh;
-        int ix;
-        int iy;
-        int nx;
-        int ny;
-        int nc;
-        int pl;
-        int r;
-        int last;
-        int[] cx;
-        int[] cy;
-        int flag;
-        float rx1;
-        float ry1;
-        float rx2;
-        float ry2;
-        float[] xc;
-        float[] yc;
-        public Bitmap bit;
-        public Canvas mcan;
-        public Paint paint;
-        public Paint mpaint;
-        public Paint bpaint;
-        List<String> lx;
-        List<String> ly;
-        List<String> l;
-
-        Singles(Context context) {
-            this(context, null);
-        }
-
-
-        public Singles(Context context, AttributeSet attrs) {
-            super(context);
-            paint = new Paint();
-            mpaint = new Paint();
-            bpaint = new Paint();
-            score = new int[2];
-            pl = 1;
-            nc =0;
-            last = 2*n*(n-1);
-            cx = new int[last];
-            cy = new int[last];
-            int mColor = ResourcesCompat.getColor(getResources(), R.color.white, null);
-            o11 = ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, null);
-            o12 = ResourcesCompat.getColor(getResources(), R.color.red, null);
-            o21 = ResourcesCompat.getColor(getResources(), R.color.blue2, null);
-            o22 = ResourcesCompat.getColor(getResources(), R.color.red2, null);
-            paint.setColor(mColor);
-            paint.setAntiAlias(true);
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeJoin(Paint.Join.ROUND);
-            paint.setStrokeCap(Paint.Cap.ROUND);
-            paint.setStrokeWidth(35);
-
-            mpaint.setColor(o11);
-            mpaint.setAntiAlias(true);
-            mpaint.setStyle(Paint.Style.STROKE);
-            mpaint.setStrokeJoin(Paint.Join.ROUND);
-            mpaint.setStrokeCap(Paint.Cap.ROUND);
-            mpaint.setStrokeWidth(15);
-
-            bpaint.setColor(o21);
-            bpaint.setAntiAlias(true);
-            bpaint.setStyle(Paint.Style.STROKE);
-            bpaint.setStrokeJoin(Paint.Join.ROUND);
-            bpaint.setStrokeCap(Paint.Cap.ROUND);
-            bpaint.setStrokeWidth(0);
-            bpaint.setStyle(Paint.Style.FILL);
-            int d =0;
-            l = new ArrayList<String >();
-            for (int i = 0;i<n;i++){
-                for(int j =0 ;j<n-1;j++){
-                    String x = "x" + j + i;
-                    String y = "y" + j + i;
-                    l.add(x);
-                    d++;
-                    l.add(y);
-                    d++;
-                }
-            }
-            l.add(" ");
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-
-            ((Activity) getContext()).getWindowManager()
-                    .getDefaultDisplay()
-                    .getMetrics(displayMetrics);
-
-
-            sw = displayMetrics.widthPixels;
-            sh = displayMetrics.heightPixels;
-            flag = 0;
-            lx = new ArrayList<String>();
-            ly = new ArrayList<String>();
-            nx = 0;
-            ny = 0;
-            int y = ((sh - sw + 400) / 2) - 100;
-            int w = (sw - 400);
-            layout(0, sw, y, y + w + 100);
-        }
-
-        protected void onSizeChanged(int width, int height,
-                                     int oldWidth, int oldHeight) {
-            super.onSizeChanged(width, height, oldWidth, oldHeight);
-            bit = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            mcan = new Canvas(bit);
-        }
-
-        @SuppressLint("DrawAllocation")
-        public void onDraw(final Canvas can) {
-            super.onDraw(can);
-            if (bit != null)
-                can.drawBitmap(bit, 0, 0, null);
-
-            int w = (sw - 400) / (n - 1);
-            int y = (sh - sw + 400) / 2;
-
-            xc = new float[n];
-            yc = new float[n];
-            for (int i = 0; i < n; i++, y += w) {
-                int x = 200;
-                for (int j = 0; j < n; j++, x += w) {
-                    can.drawLine(x, y, x, y, paint);
-                    xc[j] = x;
-                }
-                yc[i] = y;
-            }
-
-            if (flag == 1) {
-                if (ix != 100 || iy != 100) {
-                    int f = 0;
-                    String str = "x" + ix + iy;
-                    if (lx.contains(str)) f = 1;
-                    if (f == 0) {
-                        mcan.drawLine(xc[ix], yc[iy], xc[ix + 1], yc[iy], mpaint);
-                        MediaPlayer ring = MediaPlayer.create(MainActivity.this, R.raw.sound);
-                        ring.start();
-                        cx[nc] = ix;
-                        cy[nc] = iy;
-                        lx.add(nx, str);
-                        nx++;
-                        check(ix, iy);
-                    }
-
-                }
-
-            } else if (flag == 2) {
-                if (ix != 100 || iy != 100) {
-                    int f = 0;
-                    String str = "y" + iy + ix;
-                    if (ly.contains(str)) f = 1;
-                    if (f == 0) {
-                        mcan.drawLine(xc[ix], yc[iy], xc[ix], yc[iy + 1], mpaint);
-                        MediaPlayer ring = MediaPlayer.create(MainActivity.this, R.raw.sound);
-                        ring.start();
-                        ly.add(ny, str);
-                        cx[nc] = ix;
-                        cy[nc] = iy;
-                        ny++;
-                        check(ix, iy);
-                    }
-                }
-
-            }
-        }
-
-        @SuppressLint("ClickableViewAccessibility")
-        public boolean onTouchEvent(MotionEvent event) {
-            float px = event.getX();
-            float py = event.getY();
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                ix = 100;
-                iy = 100;
-                int g = 0;
-                r = 0;
-                pl = 1;
-                for (int i = 0; i < n; i++) {
-                    if (Math.abs(py - yc[i]) < 40) {
-
-                        iy = i;
-                        for (int c = 0; c < (n - 1); c++) {
-                            if (((xc[c] + 5) <= px && px <= (xc[c + 1] - 5))) {
-                                g = 1;
-                                flag = 1;
-                                ix = c;
-                                break;
-                            }
-                        }
-                        if (g == 1) break;
-                    } else if (Math.abs(px - xc[i]) < 40) {
-
-                        ix = i;
-                        for (int c = 0; c < (n - 1); c++) {
-                            if (((yc[c] + 5) <= py && py <= (yc[c + 1] - 5))) {
-                                g = 2;
-                                flag = 2;
-                                iy = c;
-                                break;
-                            }
-                        }
-                        if (g == 2) break;
-                    }
-                }
-
-                if (g == 1 || g == 2) {
-                    mpaint.setColor(o11);
-                    bpaint.setColor(o21);
-                    invalidate();
-                }
-
-            }
-            return false;
-        }
-
-        public void ai(){
-            Random rnd = new Random();
-            String s;
-            int w ;
-            int b;
-            pl = 2;
-            do {
-                b = rnd.nextInt(last);
-                s = l.get(b);
-                w = 0;
-                if(lx.contains(s)) {
-                    w = 1;
-                    l.remove(b);
-                    last--;
-                }
-                else if(ly.contains(s)){
-                    w = 2;
-                    l.remove(b);
-                    last--;
-                }
-            }while(w==1 || w==2);
-            l.remove(b);
-            last--;
-            char alpha = s.charAt(0);
-            if(alpha == 'x'){
-                flag = 1;
-                ix = Integer.parseInt(String.valueOf(s.charAt(1)));
-                iy = Integer.parseInt(String.valueOf(s.charAt(2)));
-            }else if (alpha == 'y') {
-                flag = 2;
-                iy = Integer.parseInt(String.valueOf(s.charAt(1)));
-                ix = Integer.parseInt(String.valueOf(s.charAt(2)));
-            }
-            mpaint.setColor(o12);
-            bpaint.setColor(o22);
-            invalidate();
-
-        }
-
-        public void check(int x, int y) {
-            int f = 0;
-            int k1 = 0;
-            int k2 = 0;
-            if (flag == 1) {
-                String sx1 = "x" + (x) + (y + 1);
-                String sx2 = "x" + (x) + (y - 1);
-                if (lx.contains(sx1)) {
-                    String s1 = "y" + y + x;
-                    String s2 = "y" + y + (x + 1);
-                    if (ly.contains(s1) && ly.contains(s2)) {
-                        k1 = 1;
-                        f = 1;
-                        rx1 = xc[x] + 20;
-                        ry1 = yc[y] + 20;
-                        rx2 = xc[x + 1] - 20;
-                        ry2 = yc[y + 1] - 20;
-                        Rect rec = new Rect((int) rx1, (int) ry1, (int) rx2, (int) ry2);
-                        mcan.drawRect(rec, bpaint);
-                        score[r]++;
-
-                    }
-                }
-                if (lx.contains(sx2)) {
-                    String s1 = "y" + (y - 1) + x;
-                    String s2 = "y" + (y - 1) + (x + 1);
-                    if (ly.contains(s1) && ly.contains(s2)) {
-                        k2 = 2;
-                        f = 1;
-                        rx1 = xc[x] + 20;
-                        ry1 = yc[y - 1] + 20;
-                        rx2 = xc[x + 1] - 20;
-                        ry2 = yc[y] - 20;
-                        Rect rec = new Rect((int) rx1, (int) ry1, (int) rx2, (int) ry2);
-                        mcan.drawRect(rec, bpaint);
-                        score[r]++;
-                    }
-                }
-            } else if (flag == 2) {
-                String sy1 = "y" + (y) + (x + 1);
-                String sy2 = "y" + (y) + (x - 1);
-                if (ly.contains(sy1)) {
-                    String s1 = "x" + x + y;
-                    String s2 = "x" + x + (y + 1);
-                    if (lx.contains(s1) && lx.contains(s2)) {
-                        k1 = 3;
-                        f = 1;
-                        rx1 = xc[x] + 20;
-                        ry1 = yc[y] + 20;
-                        rx2 = xc[x + 1] - 20;
-                        ry2 = yc[y + 1] - 20;
-                        Rect rec = new Rect((int) rx1, (int) ry1, (int) rx2, (int) ry2);
-                        mcan.drawRect(rec, bpaint);
-                        score[r]++;
-                    }
-                }
-                if (ly.contains(sy2)) {
-                    String s1 = "x" + (x - 1) + y;
-                    String s2 = "x" + (x - 1) + (y + 1);
-                    if (lx.contains(s1) && lx.contains(s2)) {
-                        k2 = 4;
-                        f = 1;
-                        rx1 = xc[x - 1] + 20;
-                        ry1 = yc[y] + 20;
-                        rx2 = xc[x] - 20;
-                        ry2 = yc[y + 1] - 20;
-                        Rect rec = new Rect((int) rx1, (int) ry1, (int) rx2, (int) ry2);
-                        mcan.drawRect(rec, bpaint);
-                        score[r]++;
-                    }
-                }
-            }
-            if (f == 1) {
-                if (pl == 1)
-                    pl = 2;
-                else pl = 1;
-                Vibrator vibrator;
-                vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                if (Build.VERSION.SDK_INT >= 26) {
-                    assert vibrator != null;
-                    vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE));
-                }
-            }
-//            ktrack1[nc] = k1;
-//            ktrack2[nc] = k2;
-//            ftrack[nc] = flag;
-            nc++;
-            if (nc >= (2 * n * (n - 1))) {
-                result();
-            } else {
-                if (pl == 1) {
-                    ai();
-                    r =1;
-                }
             }
         }
     }
